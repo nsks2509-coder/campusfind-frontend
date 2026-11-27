@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api.js";
 
 const blankReport = {
@@ -97,20 +97,26 @@ export default function App() {
   const [notice, setNotice] = useState("");
   const [modal, setModal] = useState(null);
   const [busy, setBusy] = useState(false);
+  const requestSequence = useRef(0);
 
   const loadItems = useCallback(async () => {
+    const requestId = ++requestSequence.current;
     setLoading(true);
     setError("");
     try {
-      setItems(await api.listItems({ q: query, type, category }));
+      const result = await api.listItems({ q: query, type, category });
+      if (requestId === requestSequence.current) setItems(result);
     } catch (err) {
-      setError(err.message);
+      if (requestId === requestSequence.current) setError(err.message);
     } finally {
-      setLoading(false);
+      if (requestId === requestSequence.current) setLoading(false);
     }
   }, [query, type, category]);
 
-  useEffect(() => { loadItems(); }, [loadItems]);
+  useEffect(() => {
+    loadItems();
+    return () => { requestSequence.current += 1; };
+  }, [loadItems]);
 
   const counts = useMemo(() => ({
     all: items.length,
