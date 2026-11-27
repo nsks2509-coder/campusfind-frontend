@@ -139,7 +139,7 @@ export default function App() {
     try {
       await api.createClaim(modal.item.id, data);
       setModal(null);
-      setNotice("Claim submitted. Keep the details you provided so you can follow up with the item reporter.");
+      setNotice("Claim submitted. This demo stores claims but does not yet notify the reporter or provide a review dashboard.");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -195,7 +195,7 @@ export default function App() {
             <div className="item-grid">
               {items.map((item) => <article className="item-card" key={item.id}>
                 <div className={`item-card-banner ${item.type === "LOST" ? "banner-lost" : "banner-found"}`}><span className="type-badge">{item.type === "LOST" ? "LOST ITEM" : "FOUND ITEM"}</span><span className="item-number">CF—{String(item.id).padStart(4, "0")}</span><div className="item-watermark"><Icon name="box" size={54}/></div></div>
-                <div className="item-card-content"><div className="item-category">{item.category || "Other"} <span>·</span> {item.status || "OPEN"}</div><h3>{item.title}</h3><p className="item-description">{item.description}</p><div className="item-location"><Icon name="pin" size={15}/><span>{item.location}</span></div><div className="item-card-footer"><span className="reporter"><span className="avatar">{(item.contactName || "C").trim().charAt(0).toUpperCase()}</span><span><strong>{item.contactName || "Campus member"}</strong><small>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "Recently reported"}</small></span></span><button className="claim-button" onClick={() => setModal({ kind: "claim", item })}>This is mine <Icon name="arrow" size={15}/></button></div></div>
+                <div className="item-card-content"><div className="item-category">{item.category || "Other"} <span>·</span> {item.status || "OPEN"}</div><h3>{item.title}</h3><p className="item-description">{item.description}</p><div className="item-location"><Icon name="pin" size={15}/><span>{item.location}</span></div><div className="item-card-footer"><span className="reporter"><span className="avatar" aria-hidden="true">C</span><span><strong>Campus member</strong><small>{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "Recently reported"}</small></span></span><button className="claim-button" onClick={() => setModal({ kind: "claim", item })}>This is mine <Icon name="arrow" size={15}/></button></div></div>
               </article>)}
             </div>
           ) : <div className="empty-state"><div className="empty-illustration"><Icon name="search" size={25}/></div><h3>No matching reports</h3><p>Try another search or be the first to post a report.</p><button className="button button-primary" onClick={() => setModal({ kind: "report" })}><Icon name="plus" size={16}/> Post a report</button></div>}
