@@ -26,7 +26,17 @@ async function request(path, options = {}) {
   }
 
   if (response.status === 204) return null;
-  return response.json();
+
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) {
+    try {
+      return await response.json();
+    } catch {
+      throw new Error("The server returned an invalid JSON response.");
+    }
+  }
+  const text = await response.text();
+  return text || null;
 }
 
 export const api = {
